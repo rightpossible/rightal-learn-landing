@@ -1,0 +1,39 @@
+services:
+  - type: web
+    name: wordpress
+    env: docker
+    dockerfilePath: ./Dockerfile
+    disk:
+      name: wordpress-data
+      mountPath: /var/www/html
+      sizeGB: 10
+    envVars:
+      - key: WORDPRESS_DB_HOST
+        fromService:
+          type: pserv
+          name: mysql
+          property: host
+      - key: WORDPRESS_DB_USER
+        value: wordpress
+      - key: WORDPRESS_DB_PASSWORD
+        generateValue: true
+      - key: WORDPRESS_DB_NAME
+        value: wordpress
+
+  - type: pserv
+    name: mysql
+    env: docker
+    repo: https://github.com/render-examples/mysql
+    disk:
+      name: mysql-data
+      mountPath: /var/lib/mysql
+      sizeGB: 10
+    envVars:
+      - key: MYSQL_DATABASE
+        value: wordpress
+      - key: MYSQL_USER
+        value: wordpress
+      - key: MYSQL_PASSWORD
+        generateValue: true
+      - key: MYSQL_ROOT_PASSWORD
+        generateValue: true 
